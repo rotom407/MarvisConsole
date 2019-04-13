@@ -26,11 +26,12 @@ namespace MarvisConsole {
             RendererWrapper.SetBlendMode(RendererWrapper.BlendModes.Normal);
             Gl.glClearColor(0.1f, 0.1f, 0.1f, 0.0f);
             Gl.glClearDepth(1.0);
-            Wgl.wglSwapIntervalEXT(1);
+
+            Wgl.wglSwapIntervalEXT(-1);
             
             Globals.thserial.Start();
             Globals.thapp.Start();
-            //Debug.Print(Wgl.wglGetSwapIntervalEXT().ToString());
+            Debug.Print(Wgl.wglGetSwapIntervalEXT().ToString());
         }
 
         static void on_display() {

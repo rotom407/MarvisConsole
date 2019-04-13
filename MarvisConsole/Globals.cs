@@ -31,7 +31,8 @@ namespace MarvisConsole {
         public const double panelanimationratio = 0.8;
         public const bool appcontrolenable = false;
 
-        public static string serialport = "COM17";
+        public static string serialport = /*"COM17"*/"COM20";
+        public const bool enableeffects = true;
 
         public static RGBAColor[] emgchannelcols = {
             /*

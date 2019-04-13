@@ -13,7 +13,7 @@ namespace MarvisConsole {
         public volatile bool usefakedata = false;
         public volatile SerialPort Serial1;
         public void DoWork() {
-            Serial1 = new SerialPort(/*"COM13"*/"COM17", 115200, Parity.None, 8, StopBits.One) {
+            Serial1 = new SerialPort(/*"COM13"*/"COM20", 115200, Parity.None, 8, StopBits.One) {
                 DtrEnable = false,
                 RtsEnable = false,
                 ReadTimeout = 500

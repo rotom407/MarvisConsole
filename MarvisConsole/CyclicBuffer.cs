@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace MarvisConsole {
     //Cyclic buffer used by plotters
     public class CyclicBuffer<T> where T:new(){
-        private T[] buf;
+        public T[] buf;
         public int maxlen = 200;
         public int currentpos = 0;
         public CyclicBuffer(int maxlen_){

@@ -13,6 +13,8 @@ namespace MarvisConsole {
         RGBAColor baselinecol = new RGBAColor(1.0, 1.0, 1.0, 0.2);
         CyclicBuffer<PanelEMGData> dispbuf = new CyclicBuffer<PanelEMGData>(100);
         double offsetsamps, samplelen, interpolaterate=0.40;
+        double[] effectstrengthslow = new double[8];
+        double[] effectstrengthfast = new double[8];
         public PanelEMG() {
             caption = "EMG Activations";
             boundingbox = new RectangleBox(Globals.panelspacingtoleft,
@@ -50,8 +52,37 @@ namespace MarvisConsole {
                 RendererWrapper.DrawBaseline(boundingbox, boundingbox.Height- boundingbox.Height*i / 9.0, baselinecol);
                 RendererWrapper.DrawEMGChannel(boundingbox, offsetsamps*samplelen, boundingbox.Height - boundingbox.Height * i / 9.0,
                     Globals.emgchannelcols[i - 1], ref dispbuf, i - 1);
+
+                bool excited = dispbuf[dispbuf.maxlen - 1].amp[i - 1] > 0;
                 RendererWrapper.DrawChannelLabel(boundingbox, 35, boundingbox.Height - boundingbox.Height * i / 9.0,
-                    Globals.emgchannelcols[i - 1], "CH" + i.ToString(), dispbuf[dispbuf.maxlen - 1].amp[i - 1] > 0);
+                    Globals.emgchannelcols[i - 1], "CH" + i.ToString(), excited);
+
+                if(excited) {
+                    effectstrengthslow[i - 1] = 0.9 * effectstrengthslow[i - 1] + 0.1 * 0.5;
+                    if (0.2 * dispbuf[dispbuf.maxlen - 1].amp[i - 1] / 255.0 > effectstrengthfast[i - 1])
+                        effectstrengthfast[i - 1] = 0.5 * effectstrengthfast[i - 1] + 0.5 * 0.2 * dispbuf[dispbuf.maxlen - 1].amp[i - 1] / 255.0;
+                } else {
+                    effectstrengthslow[i - 1] = 0.99 * effectstrengthslow[i - 1];
+                }
+                effectstrengthfast[i - 1] = 0.9 * effectstrengthfast[i - 1];
+                RendererWrapper.DrawEffectExcitation(
+                    new RectangleBox(
+                        boundingbox.left,
+                        boundingbox.right,
+                        boundingbox.bottom + boundingbox.Height * (9 - i) / 9.0 - boundingbox.Height / 18.0,
+                        boundingbox.bottom + boundingbox.Height * (10 - i) / 9.0 - boundingbox.Height / 18.0
+                        ),
+                    new RGBAColor(0, 122.0 / 255, 204.0 / 255, 0.7),
+                    effectstrengthslow[i - 1]);
+                RendererWrapper.DrawEffectExcitation(
+                    new RectangleBox(
+                        boundingbox.left,
+                        boundingbox.right,
+                        boundingbox.bottom + boundingbox.Height * (9 - i) / 9.0 - boundingbox.Height / 18.0,
+                        boundingbox.bottom + boundingbox.Height * (10 - i) / 9.0 - boundingbox.Height / 18.0
+                        ),
+                    new RGBAColor(1, 1, 1, 0.5),
+                    effectstrengthfast[i - 1]);
                 //Console.Write(dispbuf[0].amp[i-1].ToString()+" ");
             }
             /*if (rec != null) {

@@ -21,6 +21,10 @@ namespace MarvisConsole {
                     break;
             }
         }
+        static int Mod(int x, int m) {
+            int r = x % m;
+            return r < 0 ? r + m : r;
+        }
         public static void glColor4d(RGBAColor col) {
             Gl.glColor4d(col.R, col.G, col.B, col.A);
         }
@@ -203,13 +207,38 @@ namespace MarvisConsole {
             //Gl.glPolygonMode(Gl.GL_FRONT, Gl.GL_LINE);
             Gl.glBegin(Gl.GL_LINE_STRIP);
             for (int i = 0; i < buf.maxlen; i++) {
+                double perc = (double)Mod(i - buf.currentpos, buf.maxlen) / buf.maxlen;/*
+                if (perc<0.1)
+                    glColor4d(col.Fade(perc/0.1));
+                else
+                    glColor4d(col);*/
                 sbyte amp = buf[i];
                 double xpos = (double)i / (buf.maxlen - 50) * rect.Width;  //width+INTERMID
                 Gl.glVertex2d(xpos, y + amp);
             }
             Gl.glEnd();
-            Gl.glLineWidth(1);
             Gl.glPopMatrix();
+            /*
+            UpdateDepth(depth);
+            Gl.glPushMatrix();
+            Gl.glTranslated(rect.left + x, rect.bottom, currentdepth);
+            Gl.glLineWidth(3);
+            SetBlendMode(BlendModes.Add);
+            Gl.glBegin(Gl.GL_LINE_STRIP);
+            for (int i = 0; i < buf.maxlen; i++) {
+                double perc = (double)Mod(i - buf.currentpos, buf.maxlen) / buf.maxlen;
+                if (perc < 0.8)
+                    glColor4d(new RGBAColor(1, 1, 1, 0));
+                else
+                    glColor4d(new RGBAColor(1, 1, 1, 1).Fade(5 * (perc - 0.8)));
+                sbyte amp = buf.buf[i];
+                double xpos = (double)i / (buf.maxlen - 50) * rect.Width;  //width+INTERMID
+                Gl.glVertex2d(xpos, y + amp);
+            }
+            Gl.glEnd();
+            SetBlendMode(BlendModes.Normal);
+            Gl.glPopMatrix();*/
+            Gl.glLineWidth(1);
         }
 
         public static void DrawGyroChannel(RectangleBox rect, double x, double y, ref CyclicBuffer<PanelMotionData> buf, double depth = -1.0) {
@@ -389,6 +418,34 @@ namespace MarvisConsole {
             Gl.glEnd();
 
             Gl.glPopMatrix();
+        }
+
+        public static void DrawEffectExcitation(RectangleBox rect, RGBAColor col, double intensity, double depth = -1.0) {
+            if (Globals.enableeffects) {
+                UpdateDepth(depth);
+                SetBlendMode(BlendModes.Add);
+                Gl.glPushMatrix();
+                Gl.glTranslated(rect.left, rect.bottom, currentdepth);
+                double left = rect.Width * (1.0 - intensity);
+                Gl.glBegin(Gl.GL_TRIANGLE_FAN);
+                glColor4d(col.Fade(0));
+                Gl.glVertex2d(left, 0);
+                Gl.glVertex2d(left, rect.Height);
+                glColor4d(col.Fade(0.5));
+                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, rect.Height);
+                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, 0);
+                Gl.glEnd();
+                Gl.glBegin(Gl.GL_TRIANGLE_FAN);
+                glColor4d(col.Fade(0.5));
+                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, 0);
+                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, rect.Height);
+                glColor4d(col);
+                Gl.glVertex2d(rect.Width, rect.Height);
+                Gl.glVertex2d(rect.Width, 0);
+                Gl.glEnd();
+                Gl.glPopMatrix();
+                SetBlendMode(BlendModes.Normal);
+            }
         }
     }
 }

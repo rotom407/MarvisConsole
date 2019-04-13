@@ -12,8 +12,8 @@ namespace MarvisConsole {
         }
 
         void SerialConnect() {
-            //Globals.sworker.usefakedata = true;
-            Globals.sworker.SetPortOpened(true, Globals.serialport);
+            Globals.sworker.usefakedata = true;
+            //Globals.sworker.SetPortOpened(true, Globals.serialport);
         }
 
         void AppStart() {
@@ -82,6 +82,13 @@ namespace MarvisConsole {
             btninfo.caption = "PPS: 20";
             btninfo.border = true;
             clickables.Add(btninfo);
+
+            ClickableSprite logo = new ClickableSprite(new RectangleBox(
+                Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
+                Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
+                480,
+                480+64), "./Assets/marvisconsole.png");
+            clickables.Add(logo);
         }
         public void UpdateActions(int mousex,int mousey,ClickableArea.MouseAction act) {
             foreach(var c in clickables) {
