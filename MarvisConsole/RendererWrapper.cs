@@ -8,6 +8,54 @@ using Tao.FreeGlut;
 using Tao.Platform.Windows;
 
 namespace MarvisConsole {
+    public class Particle {
+        public bool aseyecandy = true;
+        public enum ParticleShapes { Diamond,Cross};
+        public ParticleShapes shape;
+        public double x, y, xsp, ysp, xacc, yacc, friction;
+        public int maxlife, life;
+        public int lifefade;
+        public double xscales, xscalef, yscales, yscalef;
+        public double xscale, yscale;
+        public RGBAColor cols;
+        public RGBAColor col = new RGBAColor(1, 1, 1, 1);
+        public RendererWrapper.BlendModes bm = RendererWrapper.BlendModes.Normal;
+        public bool dead = false;
+        public Particle(ParticleShapes shape_,RGBAColor col_, int maxlife_, double xscales_, double yscales_, double x_, double y_,
+            double xsp_ = 0, double ysp_ = 0, double xacc_ = 0, double yacc_ = 0, double friction_ = 0, int lifefade_ = 0,
+            double xscalef_=1,double yscalef_=1,RendererWrapper.BlendModes bm_=RendererWrapper.BlendModes.Normal,
+            bool aseyecandy_=false) {
+            aseyecandy = aseyecandy_;
+            shape = shape_;
+            cols = col_;
+            maxlife = maxlife_;
+            xscales = xscales_;yscales = yscales_;
+            x = x_;y = y_;
+            xsp = xsp_;ysp = ysp_;
+            xacc = xacc_;yacc = yacc_;
+            friction = friction_;
+            lifefade = lifefade_;
+            xscalef = xscalef_;yscalef = yscalef_;
+            bm = bm_;
+            col.R = cols.R;col.G = cols.G;col.B = cols.B;col.A = cols.A;
+            life = maxlife;
+            xscale = xscales;
+            yscale = yscales;
+        }
+        public void Simulate() {
+            life -= 1;
+            double lifeperc = (double)life / maxlife;
+            xscale = xscales * (lifeperc + (1 - lifeperc) * xscalef);
+            yscale = yscales * (lifeperc + (1 - lifeperc) * yscalef);
+            if (life < lifefade) {
+                col.A = cols.A * life / lifefade;
+            }
+            if (life < 0) dead = true;
+            xsp += xacc;ysp += yacc;
+            xsp *= friction;ysp *= friction;
+            x += xsp;y += ysp;
+        }
+    }
     public static class RendererWrapper {
         public enum BlendModes {Normal,Add};
         public static double currentdepth;
@@ -491,6 +539,44 @@ namespace MarvisConsole {
                 Gl.glPopMatrix();
                 SetBlendMode(BlendModes.Normal);
             }
+        }
+
+        public static void DrawParticles(RectangleBox rect, List<Particle> particles, double depth = -1.0,bool simulate=true) {
+            if (simulate) {
+                foreach(var p in particles) {
+                    p.Simulate();
+                }
+                particles.RemoveAll(x => x.dead == true);
+            }
+            UpdateDepth(depth);
+            Gl.glPushMatrix();
+            Gl.glTranslated(rect.left, rect.bottom, currentdepth);
+            foreach (var p in particles) {
+                glColor4d(p.col);
+                SetBlendMode(p.bm);
+                switch (p.shape) {
+                    case Particle.ParticleShapes.Cross:
+                        Gl.glBegin(Gl.GL_LINES);
+                        Gl.glLineWidth(1.0f);
+                        Gl.glVertex2d(p.x - p.xscale / 2, p.y - p.yscale / 2);
+                        Gl.glVertex2d(p.x + p.xscale / 2, p.y + p.yscale / 2);
+                        Gl.glVertex2d(p.x - p.xscale / 2, p.y + p.yscale / 2);
+                        Gl.glVertex2d(p.x + p.xscale / 2, p.y - p.yscale / 2);
+                        Gl.glEnd();
+                        break;
+                    case Particle.ParticleShapes.Diamond:
+                        Gl.glBegin(Gl.GL_TRIANGLE_FAN);
+                        Gl.glVertex2d(p.x - p.xscale / 2, p.y);
+                        Gl.glVertex2d(p.x, p.y + p.yscale / 2);
+                        Gl.glVertex2d(p.x + p.xscale / 2, p.y);
+                        Gl.glVertex2d(p.x, p.y - p.yscale / 2);
+                        Gl.glEnd();
+                        break;
+                }
+            }
+            SetBlendMode(BlendModes.Normal);
+            Gl.glEnd();
+            Gl.glPopMatrix();
         }
     }
 }

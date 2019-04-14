@@ -9,6 +9,7 @@ namespace MarvisConsole {
         public Point2D cursorpos = new Point2D(0, 0);
         public List<Point2D> leftclicks = new List<Point2D>();
         public List<Point2D> rightclicks = new List<Point2D>();
+        public List<Particle> particles = new List<Particle>();
         private double boundary = 100;
         public double xsp, ysp;
 
@@ -28,10 +29,26 @@ namespace MarvisConsole {
                     xsp = (rec.content[1] - 128) / 50.0;
                     ysp = (rec.content[2] - 128) / 50.0;
                     if (rec.content[3] == 0x01) {
-                        leftclicks.Add(new Point2D(cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2));
+                        particles.Add(new Particle(Particle.ParticleShapes.Cross, new RGBAColor(1.0, 0.5, 0.0, 1.0),
+                            600, 7, 7, cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2,
+                            lifefade_:200
+                            ));
+                        particles.Add(new Particle(Particle.ParticleShapes.Diamond, new RGBAColor(1.0, 0.5, 0.0, 1.0),
+                            30, 3, 3, cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2,
+                            lifefade_: 30, xscalef_: 15, yscalef_: 15, bm_: RendererWrapper.BlendModes.Add, aseyecandy_: true
+                            ));
+                        //leftclicks.Add(new Point2D(cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2));
                     }
                     if (rec.content[4] == 0x01) {
-                        rightclicks.Add(new Point2D(cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2));
+                        particles.Add(new Particle(Particle.ParticleShapes.Cross, new RGBAColor(0.0, 0.3, 1.0, 1.0),
+                            600, 7, 7, cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2,
+                            lifefade_: 200
+                            ));
+                        particles.Add(new Particle(Particle.ParticleShapes.Diamond, new RGBAColor(0.0, 0.3, 1.0, 1.0),
+                            30, 3, 3, cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2,
+                            lifefade_: 30, xscalef_: 15, yscalef_: 15, bm_: RendererWrapper.BlendModes.Add, aseyecandy_: true
+                            ));
+                        //rightclicks.Add(new Point2D(cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2));
                     }
                 }
             }
@@ -44,8 +61,9 @@ namespace MarvisConsole {
             List<Point2D> curpos = new List<Point2D>();
             curpos.Add(new Point2D(cursorpos.x + boundingbox.Width / 2, cursorpos.y + boundingbox.Height / 2));
             RendererWrapper.DrawCoordinate(boundingbox, new RGBAColor(1, 1, 1, 0.3));
-            RendererWrapper.DrawMarkers(boundingbox, leftclicks, new RGBAColor(1.0, 0.5, 0.0, 1.0), 1, 8);
-            RendererWrapper.DrawMarkers(boundingbox, rightclicks, new RGBAColor(0.0, 0.3, 1.0, 1.0), 1, 8);
+            //RendererWrapper.DrawMarkers(boundingbox, leftclicks, new RGBAColor(1.0, 0.5, 0.0, 1.0), 1, 8);
+            //RendererWrapper.DrawMarkers(boundingbox, rightclicks, new RGBAColor(0.0, 0.3, 1.0, 1.0), 1, 8);
+            RendererWrapper.DrawParticles(boundingbox, particles);
             RendererWrapper.DrawMarkers(boundingbox, curpos, new RGBAColor(Globals.emgchannelcols[8]), 0, 8);
         }
     }
