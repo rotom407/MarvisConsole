@@ -13,7 +13,7 @@ namespace MarvisConsole {
         public double xsp, ysp;
 
         public PanelMouseLocation() {
-            caption = "Cursor location";
+            caption = "Cursor Location";
             boundingbox = new RectangleBox((Globals.defaultwindowwidth - Globals.panelspacingbetween) * Globals.panelanimationratio,
                 Globals.defaultwindowwidth - Globals.panelspacingtoleft * Globals.panelanimationratio,
                 Globals.defaultwindowheight - Globals.panelspacingtotop-200,

@@ -181,7 +181,10 @@ namespace MarvisConsole {
             Gl.glPopMatrix();
         }
 
-        public static void DrawEMGChannel(RectangleBox rect, double x, double y, RGBAColor col,ref CyclicBuffer<PanelEMGData>buf,int ch, double depth = -1.0) {
+        public static void DrawEMGChannel(RectangleBox rect, double x, double y, RGBAColor col,ref CyclicBuffer<PanelEMGData>buf,int ch, bool drawlabel=false, double depth = -1.0) {
+            List<PanelLabel> pl = new List<PanelLabel>();
+            List<double> plx = new List<double>();
+            double origdepth = currentdepth;
             UpdateDepth(depth);
             Gl.glPushMatrix();
             Gl.glTranslated(rect.left+x, rect.bottom, currentdepth);
@@ -191,12 +194,54 @@ namespace MarvisConsole {
             for (int i = 0; i < buf.maxlen; i++) {
                 byte amp = buf[i].amp[ch];
                 double xpos = (double)i / (buf.maxlen - 3) * rect.Width;  //width+INTERMID
+                if (drawlabel) {
+                    foreach (var lab in buf[i].labels) {
+                        pl.Add(lab);
+                        plx.Add(xpos);
+                        break;
+                    }
+                } else {
+                    glColor4d(col);
+                }
                 Gl.glVertex2d(xpos, y + (amp>0?0:0) + 0.1 * amp);
                 Gl.glVertex2d(xpos, y - (amp>0?0:0) - 0.1 * amp);
             }
             Gl.glEnd();
             Gl.glLineWidth(1);
             Gl.glPopMatrix();
+
+            if (drawlabel) {
+                for(int i = 0; i < pl.Count; i++) {
+                    UpdateDepth(depth);
+                    Gl.glPushMatrix();
+                    Gl.glTranslated(rect.left + x + plx[i], rect.bottom, origdepth+0.001/2);
+                    Gl.glLineWidth(pl[i].bold);
+                    glColor4d(pl[i].col);
+                    Gl.glBegin(Gl.GL_LINES);
+                    Gl.glVertex2d(0, 0);
+                    Gl.glVertex2d(0, rect.Height);
+                    Gl.glEnd();
+
+                    Gl.glLineWidth(1);
+                    Gl.glBegin(Gl.GL_LINE_STRIP);
+                    Gl.glVertex2d(0, 0 + 15);
+                    Gl.glVertex2d(7, 7 + 15);
+                    Gl.glVertex2d(30, 7 + 15);
+                    Gl.glVertex2d(30, -7 + 15);
+                    Gl.glVertex2d(7, -7 + 15);
+                    Gl.glVertex2d(0, 0 + 15);
+                    Gl.glEnd();
+
+                    Gl.glTranslated(10, 12, 0.0);
+                    Gl.glScaled(0.07, 0.07, 1.0);
+                    foreach (char c in pl[i].label) {
+                        Gl.glTranslated(10, 0.0, 0.0);
+                        Glut.glutStrokeCharacter(Glut.GLUT_STROKE_ROMAN, c);
+                    }
+                    Gl.glPopMatrix();
+
+                }
+            }
         }
 
         public static void DrawRawChannel(RectangleBox rect, double x, double y, RGBAColor col, ref CyclicBuffer<sbyte> buf, double depth = -1.0) {

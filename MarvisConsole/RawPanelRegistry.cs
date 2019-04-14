@@ -16,12 +16,14 @@ namespace MarvisConsole {
         public void Update() {
             DataRecord rdr=null;
             DataRecordRaw rdrr = null;
-            rdr=Globals.datbuf.Pop(RawDataBuffer.ConsumerName.GUI);
-            if(rdr!=null)
-                rdrr = new DataRecordRaw(rdr);
-            foreach(var p in panellistraw) {
-                p.Draw(rdrr);
-            }
+            do {
+                rdr = Globals.datbuf.Pop(RawDataBuffer.ConsumerName.GUI);
+                if (rdr != null)
+                    rdrr = new DataRecordRaw(rdr);
+                foreach (var p in panellistraw) {
+                    p.Draw(rdrr);
+                }
+            } while (Globals.datbuf.bufgui.Count > 0);
         }
     }
 }

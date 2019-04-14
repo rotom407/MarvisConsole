@@ -26,6 +26,9 @@ namespace MarvisConsole {
             im.Dispose();
         }
         public override void UpdateGraphics() {
+            boundingbox.targetleft = boundingbox.origleft * Globals.panelanimationratio;
+            boundingbox.targetright = boundingbox.origleft * Globals.panelanimationratio + boundingbox.origright - boundingbox.origleft;
+            boundingbox.animateupdate(Globals.panelanimated);
             Gl.glDisable(Gl.GL_LIGHTING);
             Gl.glBindTexture(Gl.GL_TEXTURE_2D, tID);
             Gl.glEnable(Gl.GL_TEXTURE_2D);

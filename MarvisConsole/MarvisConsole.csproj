@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="AppBase.cs" />
     <Compile Include="AppDataBuffer.cs" />
+    <Compile Include="Apps\AppUtils.cs" />
     <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />
     <Compile Include="Apps\Mouse\PanelMouseLocation.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="CyclicBuffer.cs" />
     <Compile Include="DataRecordRaw.cs" />
     <Compile Include="FakeRawDataGenerator.cs" />
+    <Compile Include="IPanelwithLabels.cs" />
     <Compile Include="PanelGroupApp.cs" />
     <Compile Include="PanelGroupRaw.cs" />
     <Compile Include="Point2D.cs" />

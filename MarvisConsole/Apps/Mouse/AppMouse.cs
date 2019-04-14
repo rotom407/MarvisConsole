@@ -124,7 +124,7 @@ namespace MarvisConsole {
                 xb = 128 + (int)(10 * tmpxsp);
                 if (xb > 255) xb = 255;if (xb < 0) xb = 0;
                 yb = 128 + (int)(10 * tmpysp);
-                if (yb > 255) yb = 255;if (yb < 0) xb = 0;
+                if (yb > 255) yb = 255;if (yb < 0) yb = 0;
                 bytes.Add((byte)xb);
                 bytes.Add((byte)yb);
 
@@ -132,10 +132,12 @@ namespace MarvisConsole {
                 switch (ltrr) {
                     case 1:
                         bytes.Add(0x01);
+                        AppUtils.AddLabelToEMGPanel(new PanelLabel("LD", new RGBAColor(1, 0.5, 0, 1), 0, bold_: 2));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_LEFTDOWN);
                         break;
                     case -1:
                         bytes.Add(0x02);
+                        AppUtils.AddLabelToEMGPanel(new PanelLabel("LU", new RGBAColor(1, 0.5, 0, 0.5), 0));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_LEFTUP);
                         break;
                     default:
@@ -146,10 +148,12 @@ namespace MarvisConsole {
                 switch (rtrr) {
                     case 1:
                         bytes.Add(0x01);
+                        AppUtils.AddLabelToEMGPanel(new PanelLabel("RD", new RGBAColor(0, 0.3, 1, 1), 0, bold_: 2));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_RIGHTDOWN);
                         break;
                     case -1:
                         bytes.Add(0x02);
+                        AppUtils.AddLabelToEMGPanel(new PanelLabel("RU", new RGBAColor(0, 0.3, 1, 0.5), 0));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_RIGHTUP);
                         break;
                     default:
