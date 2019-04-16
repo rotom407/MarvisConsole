@@ -65,6 +65,7 @@ namespace MarvisConsole {
         public bool enablemotion = false;
         private double xremain = 0.0, yremain = 0.0;
         public double xsp = 0.0, ysp = 0.0;
+        public int keypressedtime = 0;
 
         private void MoveCursor(int dx, int dy) {
             //Cursor = new System.Windows.Forms.Cursor(System.Windows.Forms.Cursor.Current.Handle);
@@ -78,7 +79,7 @@ namespace MarvisConsole {
             mouse_event(action, X, Y, 0, 0);
         }
 
-        void applymotion() {
+        void applymotion(ClickableArea o) {
             enablemotion = !enablemotion;
         }
         
@@ -109,6 +110,11 @@ namespace MarvisConsole {
                 //Console.WriteLine(drr.emgamplitude[0]);
                 tmpxsp = -0.2 * facx.Feed(drr.accelmeter[0, 1]);
                 tmpysp = -0.2 * facz.Feed(drr.accelmeter[0, 2]);
+                if (keypressedtime > 0) {
+                    tmpxsp /= (1 + keypressedtime / 50.0);
+                    tmpysp /= (1 + keypressedtime / 50.0);
+                    keypressedtime -= 1;
+                }
                 //mouse_event(0, 100, 0, 0, 0);
                 norm = Math.Sqrt(tmpxsp * tmpxsp + tmpysp * tmpysp);
                 double deadzone = 3;
@@ -134,11 +140,13 @@ namespace MarvisConsole {
                         bytes.Add(0x01);
                         AppUtils.AddLabelToEMGPanel(new PanelLabel("LD", new RGBAColor(1, 0.5, 0, 1), 0, bold_: 2));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_LEFTDOWN);
+                        keypressedtime = 100;
                         break;
                     case -1:
                         bytes.Add(0x02);
                         AppUtils.AddLabelToEMGPanel(new PanelLabel("LU", new RGBAColor(1, 0.5, 0, 0.5), 0));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_LEFTUP);
+                        keypressedtime = 0;
                         break;
                     default:
                         bytes.Add(0x00);
@@ -150,11 +158,13 @@ namespace MarvisConsole {
                         bytes.Add(0x01);
                         AppUtils.AddLabelToEMGPanel(new PanelLabel("RD", new RGBAColor(0, 0.3, 1, 1), 0, bold_: 2));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_RIGHTDOWN);
+                        keypressedtime = 100;
                         break;
                     case -1:
                         bytes.Add(0x02);
                         AppUtils.AddLabelToEMGPanel(new PanelLabel("RU", new RGBAColor(0, 0.3, 1, 0.5), 0));
                         if (enablemotion) DoMouseClick(MOUSEEVENTF_RIGHTUP);
+                        keypressedtime = 0;
                         break;
                     default:
                         bytes.Add(0x00);

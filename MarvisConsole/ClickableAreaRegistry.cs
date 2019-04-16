@@ -11,18 +11,37 @@ namespace MarvisConsole {
             Console.WriteLine("Pressed");
         }
 
-        void SerialConnect() {
+        void SerialConnect(ClickableArea o) {
             Globals.sworker.usefakedata = true;
             //Globals.sworker.SetPortOpened(true, Globals.serialport);
         }
 
-        void AppStart() {
+        void AppStart(ClickableArea o) {
             Globals.panelanimated = !Globals.panelanimated;
             if (Globals.panelanimated) {
-                Globals.appreg.applist.Add(new AppMouse());
+                Globals.appreg.applist.Add(Globals.GetApp(Globals.appselected));
             } else {
                 Globals.appreg.applist.Clear();
             }
+        }
+
+        void SendCommands(ClickableArea o) {
+            lock (Globals.serialcommand) {
+                Globals.serialcommand.Enqueue((byte)'R');
+                Globals.serialcommand.Enqueue(Globals.GetRawChannelCommand(Globals.rawchselected));
+            }
+        }
+
+        void SwitchRawChannel(ClickableArea o) {
+            o.ival = (o.ival + 1) % Globals.rawchcmdnum;
+            Globals.rawchselected = o.ival;
+            o.caption = "Raw Channel: EMGCH" + (o.ival + 1).ToString();
+        }
+
+        void SwitchApp(ClickableArea o) {
+            o.ival = (o.ival + 1) % Globals.appnum;
+            Globals.appselected = o.ival;
+            o.caption = "App: " + Globals.appnames[o.ival];
         }
 
         public ClickableAreaRegistry() {
@@ -35,6 +54,7 @@ namespace MarvisConsole {
             btnappselect.border = true;
             btnappselect.col = new RGBAColor(200.0 / 255.0, 80.0 / 255.0, 0.0 / 255.0, 1.0);
             btnappselect.caption = "App: Mouse Control";
+            btnappselect.MouseDown = SwitchApp;
             clickables.Add(btnappselect);
 
             ClickableButton btnappapply = new ClickableButton(new RectangleBox(
@@ -54,6 +74,7 @@ namespace MarvisConsole {
                 390,
                 420));
             btnrawselect.border = true;
+            btnrawselect.MouseDown = SwitchRawChannel;
             btnrawselect.caption = "Raw Channel: EMGCH1";
             clickables.Add(btnrawselect);
 
@@ -63,6 +84,7 @@ namespace MarvisConsole {
                 390,
                 420));
             btnrawapply.caption = "Change";
+            btnrawapply.MouseDown = SendCommands;
             clickables.Add(btnrawapply);
 
             ClickableButton btnconnect = new ClickableButton(new RectangleBox(

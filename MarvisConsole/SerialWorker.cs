@@ -25,7 +25,12 @@ namespace MarvisConsole {
                     Thread.Sleep(50);
                 } else {
                     if (Serial1.IsOpen) {
-                        byte[] bytesnd = new byte[1] { (byte)'s' };
+                        byte tx=(byte)'s';
+                        lock (Globals.serialcommand) {
+                            if (Globals.serialcommand.Count > 0)
+                                tx = Globals.serialcommand.Dequeue();
+                        }
+                        byte[] bytesnd = new byte[1] { tx };
                         byte[] msglenrecv = new byte[10];
                         byte[] byterecv = new byte[100];
                         byte[] datrecv = new byte[100];

@@ -15,16 +15,18 @@ namespace MarvisConsole {
             WheelUp
         }
         //use delegate for more dynamics
-        public delegate void DMouseOver(bool inside);
-        public DMouseOver MouseOver = new DMouseOver((x) => { });
-        public delegate void DMouseDown();
-        public DMouseDown MouseDown = new DMouseDown(() => { });
-        public delegate void DMouseUp();
-        public DMouseUp MouseUp = new DMouseUp(() => { });
-        public delegate void DMouseWheel(bool incr);
-        public DMouseWheel MouseWheel = new DMouseWheel((x) => { });
+        public delegate void DMouseOver(ClickableArea o, bool inside);
+        public DMouseOver MouseOver = new DMouseOver((o, x) => { });
+        public delegate void DMouseDown(ClickableArea o);
+        public DMouseDown MouseDown = new DMouseDown((o) => { });
+        public delegate void DMouseUp(ClickableArea o);
+        public DMouseUp MouseUp = new DMouseUp((o) => { });
+        public delegate void DMouseWheel(ClickableArea o, bool incr);
+        public DMouseWheel MouseWheel = new DMouseWheel((o, x) => { });
         public bool pressed = false;
         public bool hover = false;
+        public int ival = 0;
+        public string caption = "Button";
 
         public ClickableArea(RectangleBox box) {
             boundingbox = box;
@@ -33,25 +35,26 @@ namespace MarvisConsole {
         public void UpdateActions(int mousex,int mousey, MouseAction act) {
             if (boundingbox.IsInbox(mousex, mousey)) {
                 hover = true;
-                MouseOver(true);
+                MouseOver(this,true);
                 switch (act) {
                     case MouseAction.Down:
-                        MouseDown();
+                        MouseDown(this);
                         break;
                     case MouseAction.Up:
-                        MouseUp();
+                        MouseUp(this);
                         break;
                     case MouseAction.WheelDown:
-                        MouseWheel(false);
+                        MouseWheel(this,false);
                         break;
                     case MouseAction.WheelUp:
-                        MouseWheel(true);
+                        MouseWheel(this,true);
                         break;
                 }
             } else {
                 hover = false;
-                MouseOver(false);
+                MouseOver(this,false);
             }
+
         }
 
         public virtual void UpdateGraphics() {

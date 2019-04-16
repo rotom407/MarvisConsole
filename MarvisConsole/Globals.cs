@@ -13,6 +13,7 @@ namespace MarvisConsole {
         public static ClickableAreaRegistry clickablereg = new ClickableAreaRegistry();
         public static AppRegistry appreg = new AppRegistry();
         public static SerialWorker sworker = new SerialWorker();
+        public volatile static Queue<byte> serialcommand = new Queue<byte>();
         public static AppWorker aworker = new AppWorker();
         public static Thread thserial = new Thread(sworker.DoWork);
         public static Thread thapp = new Thread(aworker.DoWork);
@@ -30,6 +31,29 @@ namespace MarvisConsole {
         public static bool panelanimated = false;
         public const double panelanimationratio = 0.8;
         public const bool appcontrolenable = false;
+
+        public static string[] appnames = {
+            "Mouse Control",
+            "Presentation"
+        };
+        public static AppBase GetApp(int appid) {
+            switch (appid) {
+                case 0:
+                    return new AppMouse();
+                case 1:
+                    return new AppPresentation();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+        public const int appnum = 2;
+        public static int appselected = 0;
+
+        public static byte GetRawChannelCommand(int cmdid) {
+            return (byte)((byte)'1' + (byte)cmdid);
+        }
+        public const int rawchcmdnum = 8;
+        public static int rawchselected = 0;
 
         public static string serialport = /*"COM17"*/"COM20";
         public const bool enableeffects = true;

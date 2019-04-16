@@ -63,10 +63,13 @@
     <Compile Include="AppBase.cs" />
     <Compile Include="AppDataBuffer.cs" />
     <Compile Include="Apps\AppUtils.cs" />
+    <Compile Include="Apps\ExampleBlank\AppExampleBlank.cs" />
+    <Compile Include="Apps\ExampleBlank\PanelExampleBlank.cs" />
     <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />
     <Compile Include="Apps\Mouse\PanelMouseLocation.cs" />
     <Compile Include="Apps\Mouse\PanelMouseSpeed.cs" />
+    <Compile Include="Apps\Presentation\AppPresentation.cs" />
     <Compile Include="AppWorker.cs" />
     <Compile Include="ClickableArea.cs" />
     <Compile Include="ClickableAreaRegistry.cs" />

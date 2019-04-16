@@ -8,7 +8,6 @@ namespace MarvisConsole {
     public class ClickableButton:ClickableArea {
         public RGBAColor col = new RGBAColor(0.0 / 255.0, 122.0 / 255.0, 204.0 / 255.0, 1.0);
         double animationratio = 0.0;
-        public string caption="Button";
         public bool border = false;
         public bool inapp = false;
         //public bool animated = true;
