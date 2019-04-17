@@ -7,13 +7,17 @@ using System.Threading.Tasks;
 namespace MarvisConsole {
     public class ClickableAreaRegistry {    //clickables appregistry
         public List<ClickableArea> clickables=new List<ClickableArea>();
+        public double animatei = 0;
+        ClickableSprite demologo = null;
         void msd() {
             Console.WriteLine("Pressed");
         }
 
         void SerialConnect(ClickableArea o) {
-            Globals.sworker.usefakedata = true;
-            //Globals.sworker.SetPortOpened(true, Globals.serialport);
+            if(Globals.demomode)
+                Globals.sworker.usefakedata = true;
+            else
+                Globals.sworker.SetPortOpened(true, Globals.serialport);
         }
 
         void AppStart(ClickableArea o) {
@@ -21,7 +25,7 @@ namespace MarvisConsole {
             if (Globals.panelanimated) {
                 Globals.appreg.applist.Add(Globals.GetApp(Globals.appselected));
             } else {
-                Globals.appreg.applist.Clear();
+                Globals.appreg.KillAllApps();
             }
         }
 
@@ -109,8 +113,17 @@ namespace MarvisConsole {
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
                 480,
-                480+64), "./Assets/marvisconsole.png");
+                480 + 64), "./Assets/marvisconsole.png");
+            logo.alpha = 1;
             clickables.Add(logo);
+
+            demologo = new ClickableSprite(new RectangleBox(
+                Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
+                Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
+                480,
+                480 + 64), "./Assets/marvisconsoledemo.png");
+            demologo.alpha = 0;
+            clickables.Add(demologo);
         }
         public void UpdateActions(int mousex,int mousey,ClickableArea.MouseAction act) {
             foreach(var c in clickables) {
@@ -118,6 +131,14 @@ namespace MarvisConsole {
             }
         }
         public void UpdateGraphics() {
+            if (Globals.demomode) {
+                animatei += 0.05;
+                if (animatei >= Math.PI * 2)
+                    animatei -= Math.PI * 2;
+                demologo.alpha = (Math.Sin(animatei) + 1) / 2.0;
+            } else {
+                demologo.alpha = 0;
+            }
             foreach(var c in clickables) {
                 c.UpdateGraphics();
             }

@@ -13,8 +13,11 @@ namespace MarvisConsole {
         public override List<PanelGroupApp> Panels { get => panels; set => throw new NotImplementedException(); }
         public override List<ClickableArea> Clickables { get => clickables; set => throw new NotImplementedException(); }
         const int appuid = 0x03;
+        const int udpportsvr = 7920;
+        const int udpportcli = 7920;
+        const string svrip = "47.93.244.190";
         UdpClient client;
-        IPEndPoint ep = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 7777);
+        IPEndPoint ep = new IPEndPoint(IPAddress.Parse(svrip), udpportsvr);
 
         public bool enablemotion;
         void applymotion(ClickableArea o) {
@@ -22,10 +25,20 @@ namespace MarvisConsole {
         }
 
         public void UDPrecvinterrupt(IAsyncResult res) {
-            IPEndPoint remoteipendpt = new IPEndPoint(IPAddress.Any, 7777);
-            byte[] recv = client.EndReceive(res, ref remoteipendpt);
-            Console.WriteLine(Encoding.UTF8.GetString(recv));
-            client.BeginReceive(new AsyncCallback(UDPrecvinterrupt), null);
+            bool fail = false;
+            byte[] recv = new byte[] { };
+            IPEndPoint remoteipendpt = new IPEndPoint(IPAddress.Any, udpportsvr);
+            try {
+                recv=client.EndReceive(res, ref remoteipendpt);
+            } catch (Exception e)when (e is ArgumentException || e is ObjectDisposedException) {
+                fail = true;
+                if(connected)
+                    Console.WriteLine(e.ToString());
+            }
+            if (!fail) {
+                Console.WriteLine(Encoding.UTF8.GetString(recv));
+                client.BeginReceive(new AsyncCallback(UDPrecvinterrupt), null);
+            }
         }
 
         public bool connected=false;
@@ -43,19 +56,19 @@ namespace MarvisConsole {
                 }
             } else {
                 client.Close();
-                client = new UdpClient();
+                client = new UdpClient(udpportcli);
                 o.caption = "Connect";
             }
         }
 
         void TestConnection(ClickableArea o) {
             if (connected) {
-                client.Send(Encoding.ASCII.GetBytes("hello\0"), 6);
+                client.Send(Encoding.ASCII.GetBytes("hello"), 5);
             }
         }
 
         public AppInteropTest() {
-            client = new UdpClient();
+            client = new UdpClient(udpportcli);
 
             ClickableButton btnapply = new ClickableButton(new RectangleBox(
                 (Globals.defaultwindowwidth - Globals.panelspacingbetween) * Globals.panelanimationratio * 1.1,
@@ -110,6 +123,11 @@ namespace MarvisConsole {
             DataRecord txdr = new DataRecord(0x00, txbytes);
             Globals.appdatbuf.Push(txdr);
             */
+        }
+
+        public override void Kill() {
+            base.Kill();
+            client.Close();
         }
     }
 }

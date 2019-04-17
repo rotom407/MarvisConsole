@@ -45,5 +45,12 @@ namespace MarvisConsole {
                 app.Run(rdr);
             }
         }
+
+        public void KillAllApps() {
+            foreach(var app in applist) {
+                app.Kill();
+            }
+            Globals.appreg.applist.Clear();
+        }
     }
 }

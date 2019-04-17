@@ -9,5 +9,8 @@ namespace MarvisConsole {
         public abstract List<PanelGroupApp> Panels { get; set; }
         public abstract List<ClickableArea> Clickables { get; set; }
         public abstract void Run(DataRecord rec);
+        public virtual void Kill() {
+
+        }
     }
 }

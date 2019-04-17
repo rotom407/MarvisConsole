@@ -10,6 +10,7 @@ using Tao.OpenGl;
 namespace MarvisConsole {
     public class ClickableSprite : ClickableArea {
         public int tID;
+        public double alpha = 1.0;
         public ClickableSprite(RectangleBox box, string spritefilename) : base(box) {
             boundingbox = box;
             Bitmap im = new Bitmap(spritefilename);
@@ -35,7 +36,7 @@ namespace MarvisConsole {
             Gl.glTranslated(0, 0, RendererWrapper.currentdepth);
             Gl.glTexEnvi(Gl.GL_TEXTURE_ENV, Gl.GL_TEXTURE_ENV_MODE, Gl.GL_BLEND);
             Gl.glBegin(Gl.GL_QUAD_STRIP);
-            Gl.glColor4d(1, 1, 1, 1);
+            Gl.glColor4d(1, 1, 1, alpha);
             Gl.glTexCoord2f(0, 1); Gl.glVertex2d(boundingbox.left, boundingbox.top);
             Gl.glTexCoord2f(1, 1); Gl.glVertex2d(boundingbox.right, boundingbox.top);
             Gl.glTexCoord2f(0, 0); Gl.glVertex2d(boundingbox.left, boundingbox.bottom);
