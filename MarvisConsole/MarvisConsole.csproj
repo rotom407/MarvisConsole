@@ -65,6 +65,7 @@
     <Compile Include="Apps\AppUtils.cs" />
     <Compile Include="Apps\ExampleBlank\AppExampleBlank.cs" />
     <Compile Include="Apps\ExampleBlank\PanelExampleBlank.cs" />
+    <Compile Include="Apps\InteropTest\AppInteropTest.cs" />
     <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />
     <Compile Include="Apps\Mouse\PanelMouseLocation.cs" />

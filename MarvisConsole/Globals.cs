@@ -34,7 +34,8 @@ namespace MarvisConsole {
 
         public static string[] appnames = {
             "Mouse Control",
-            "Presentation"
+            "Presentation",
+            "Interop Test"
         };
         public static AppBase GetApp(int appid) {
             switch (appid) {
@@ -42,11 +43,13 @@ namespace MarvisConsole {
                     return new AppMouse();
                 case 1:
                     return new AppPresentation();
+                case 2:
+                    return new AppInteropTest();
                 default:
                     throw new NotImplementedException();
             }
         }
-        public const int appnum = 2;
+        public const int appnum = 3;
         public static int appselected = 0;
 
         public static byte GetRawChannelCommand(int cmdid) {
@@ -56,7 +59,7 @@ namespace MarvisConsole {
         public static int rawchselected = 0;
 
         public static string serialport = /*"COM17"*/"COM20";
-        public const bool enableeffects = true;
+        public const bool enableeffects = false;
 
         public static RGBAColor[] emgchannelcols = {
             /*

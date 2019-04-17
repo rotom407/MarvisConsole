@@ -18,7 +18,6 @@ namespace MarvisConsole {
         }
 
         public AppPresentation() {
-            panels.Add(new PanelMouseSpeed());
 
             ClickableButton btnapply = new ClickableButton(new RectangleBox(
                 (Globals.defaultwindowwidth - Globals.panelspacingbetween) * Globals.panelanimationratio * 1.1,
