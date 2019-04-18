@@ -15,6 +15,8 @@ namespace MarvisConsole {
         const int appuid = 0x03;
         const int udpportsvr = 7920;
         const int udpportcli = 7920;
+        public byte udptimestamp = 0;
+        public bool enabledatatransfer = false;
         const string svrip = "47.93.244.190";
         UdpClient client;
         IPEndPoint ep = new IPEndPoint(IPAddress.Parse(svrip), udpportsvr);
@@ -36,6 +38,7 @@ namespace MarvisConsole {
                     Console.WriteLine(e.ToString());
             }
             if (!fail) {
+                Console.Write("Received: ");
                 Console.WriteLine(Encoding.UTF8.GetString(recv));
                 client.BeginReceive(new AsyncCallback(UDPrecvinterrupt), null);
             }
@@ -49,6 +52,7 @@ namespace MarvisConsole {
                 try {
                     client.Connect(ep);
                     client.BeginReceive(new AsyncCallback(UDPrecvinterrupt), null);
+                    Console.WriteLine("Connected.");
                 } catch (SocketException e) {
                     connected = false;
                     Console.WriteLine("CONNECTION FAILED!!! WOW");
@@ -58,10 +62,22 @@ namespace MarvisConsole {
                 client.Close();
                 client = new UdpClient(udpportcli);
                 o.caption = "Connect";
+                Console.WriteLine("Disconnected.");
             }
         }
 
-        void TestConnection(ClickableArea o) {
+        void EnableDataTransfer(ClickableArea o) {
+            enabledatatransfer = !enabledatatransfer;
+            if (enabledatatransfer) {
+                o.caption = "Disable";
+                Console.WriteLine("Data transfer enabled.");
+            } else {
+                o.caption = "Enable";
+                Console.WriteLine("Data transfer disabled.");
+            }
+        }
+
+        void TestConnection(ClickableArea o) {  //not used
             if (connected) {
                 client.Send(Encoding.ASCII.GetBytes("hello"), 5);
             }
@@ -108,14 +124,24 @@ namespace MarvisConsole {
             btntest.boundingbox.left = btnapply.boundingbox.right - 1;
             btntest.col = Globals.guicolors[1];
             btntest.border = false;
-            btntest.caption = "Test";
-            btntest.MouseDown = TestConnection;
+            btntest.caption = "Enable";
+            btntest.MouseDown = EnableDataTransfer;
             clickables.Add(btntest);
         }
 
         public override void Run(DataRecord rec) {
             if (rec != null) {  //valid data
                 DataRecordRaw drr = new DataRecordRaw(rec); //translation
+                if (connected && enabledatatransfer) {
+                    byte[] cont = new byte[rec.content.Count + 2];
+                    udptimestamp++;
+                    for(int i=2;i< rec.content.Count + 2; i++) {
+                        cont[i] = rec.content[i - 2];
+                    }
+                    cont[1] = udptimestamp;
+                    cont[0] = (byte)(rec.content.Count + 2);
+                    client.Send(cont, rec.content.Count + 2);
+                }
             }
             /** to send data to app panels
             List<byte> txbytes = new List<byte> { appuid };

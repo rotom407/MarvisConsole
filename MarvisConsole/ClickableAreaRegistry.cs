@@ -105,7 +105,7 @@ namespace MarvisConsole {
                 Globals.defaultwindowwidth - Globals.panelspacingtoleft,
                 430,
                 460));
-            btninfo.caption = "PPS: 20";
+            btninfo.caption = " ";
             btninfo.border = true;
             clickables.Add(btninfo);
 
