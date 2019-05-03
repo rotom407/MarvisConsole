@@ -87,8 +87,12 @@ namespace MarvisConsole {
             o.caption = "Raw Channel: EMGCH" + (o.ival + 1).ToString();
         }
 
-        void SwitchApp(ClickableArea o, bool right) {
-            o.ival = (o.ival + 1) % Globals.appnum;
+        void SwitchApp(ClickableArea o, bool wheelup) {
+            if (wheelup) {
+                o.ival++;if (o.ival >= Globals.appnum) o.ival = 0;
+            } else {
+                o.ival--;if (o.ival < 0) o.ival = Globals.appnum - 1;
+            }
             Globals.appselected = o.ival;
             o.caption = "App: " + Globals.appnames[o.ival];
         }
@@ -103,7 +107,8 @@ namespace MarvisConsole {
             btnappselect.border = true;
             btnappselect.col = new RGBAColor(200.0 / 255.0, 80.0 / 255.0, 0.0 / 255.0, 1.0);
             btnappselect.caption = "App: Mouse Control";
-            btnappselect.MouseDown = SwitchApp;
+            btnappselect.MouseDown = (o,x)=> { SwitchApp(o, !x); } ;
+            btnappselect.MouseWheel = SwitchApp;
             clickables.Add(btnappselect);
 
             ClickableButton btnappapply = new ClickableButton(new RectangleBox(

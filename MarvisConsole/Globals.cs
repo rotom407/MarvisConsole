@@ -63,7 +63,7 @@ namespace MarvisConsole {
 
         public static string serialport = /*"COM17"*/"COM20";
         public const bool enableeffects = true;
-        public const bool demomode = false;
+        public const bool demomode = true;
 
         public static RGBAColor[] emgchannelcols = {
             /*

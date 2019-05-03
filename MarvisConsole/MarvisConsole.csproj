@@ -58,6 +58,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>D:\Program Files (x86)\TaoFramework\bin\Tao.Platform.Windows.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsInput, Version=1.0.4.0, Culture=neutral, PublicKeyToken=9b287f7dc5073cad, processorArchitecture=MSIL">
+      <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppBase.cs" />
@@ -69,7 +72,7 @@
     <Compile Include="Apps\Example\PanelExample.cs" />
     <Compile Include="Apps\InteropTest\AppInteropTest.cs" />
     <Compile Include="Apps\Minecraft\AppMinecraft.cs" />
-    <Compile Include="Apps\Minecraft\PanelMinecraft.cs" />
+    <Compile Include="Apps\Minecraft\PanelMinecraftView.cs" />
     <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />
     <Compile Include="Apps\Mouse\PanelMouseLocation.cs" />

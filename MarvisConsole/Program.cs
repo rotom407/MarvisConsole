@@ -4,6 +4,7 @@ using Tao.FreeGlut;
 using Tao.Platform.Windows;
 using System.Threading;
 using System.Diagnostics;
+using System.Timers;
 
 namespace MarvisConsole {
     class Program {
@@ -12,7 +13,21 @@ namespace MarvisConsole {
         static PanelEMG panelEMG = new PanelEMG();
         static PanelRaw panelRaw = new PanelRaw();
         static PanelMotion panelMotion = new PanelMotion();
+
+        static System.Timers.Timer timerfps;
+        static volatile int fpscounter = 0;
         
+        static void SetupTimers() {
+            timerfps = new System.Timers.Timer(1000);
+            timerfps.Elapsed += Timerfps_Elapsed;
+            timerfps.AutoReset = true;
+            timerfps.Enabled = true;
+        }
+
+        private static void Timerfps_Elapsed(object sender, ElapsedEventArgs e) {
+            //Console.WriteLine(fpscounter);
+            fpscounter = 0;
+        }
 
         static void init_graphics() {
             //Gl.glEnable(Gl.GL_LIGHTING);
@@ -35,6 +50,7 @@ namespace MarvisConsole {
         }
 
         static void on_display() {
+            fpscounter++;
             timestep += 0.1f;
             Gl.glClear(Gl.GL_COLOR_BUFFER_BIT | Gl.GL_DEPTH_BUFFER_BIT );
             Gl.glLoadIdentity();
@@ -103,6 +119,7 @@ namespace MarvisConsole {
             Glut.glutInitDisplayMode(Glut.GLUT_DOUBLE | Glut.GLUT_RGBA | Glut.GLUT_DEPTH | Glut.GLUT_MULTISAMPLE);
             Glut.glutInitWindowSize(Globals.defaultwindowwidth, Globals.defaultwindowheight);
             Glut.glutCreateWindow("Marvis Console");
+            SetupTimers();
             init_graphics();
             Glut.glutDisplayFunc(on_display);
             Glut.glutPassiveMotionFunc(on_mousemove);
