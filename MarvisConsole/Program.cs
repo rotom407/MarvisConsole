@@ -76,10 +76,18 @@ namespace MarvisConsole {
         }
 
         static void on_mouseclick(int button,int state,int x,int y) {
-            Globals.clickablereg.UpdateActions(Globals.mousex, Globals.mousey,
-                state == Glut.GLUT_DOWN ? ClickableArea.MouseAction.Down : ClickableArea.MouseAction.Up);
-            Globals.appreg.UpdateClickables(Globals.mousex, Globals.mousey,
-                state == Glut.GLUT_DOWN ? ClickableArea.MouseAction.Down : ClickableArea.MouseAction.Up);
+            if (button == Glut.GLUT_LEFT_BUTTON) {
+                Globals.clickablereg.UpdateActions(Globals.mousex, Globals.mousey,
+                    state == Glut.GLUT_DOWN ? ClickableArea.MouseAction.LeftDown : ClickableArea.MouseAction.LeftUp);
+                Globals.appreg.UpdateClickables(Globals.mousex, Globals.mousey,
+                    state == Glut.GLUT_DOWN ? ClickableArea.MouseAction.LeftDown : ClickableArea.MouseAction.LeftUp);
+            } else if(button==Glut.GLUT_RIGHT_BUTTON) {
+                Globals.clickablereg.UpdateActions(Globals.mousex, Globals.mousey,
+                    state == Glut.GLUT_DOWN ? ClickableArea.MouseAction.RightDown : ClickableArea.MouseAction.RightUp);
+                Globals.appreg.UpdateClickables(Globals.mousex, Globals.mousey,
+                    state == Glut.GLUT_DOWN ? ClickableArea.MouseAction.RightDown : ClickableArea.MouseAction.RightUp);
+
+            }
         }
 
         static void on_mousewheel(int wheel, int direction, int x, int y) {

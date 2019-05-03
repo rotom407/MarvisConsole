@@ -9,18 +9,20 @@ namespace MarvisConsole {
         public RectangleBox boundingbox = new RectangleBox();
         public enum MouseAction {
             None,
-            Down,
-            Up,
+            LeftDown,
+            LeftUp,
+            RightDown,
+            RightUp,
             WheelDown,
             WheelUp
         }
         //use delegate for more dynamics
         public delegate void DMouseOver(ClickableArea o, bool inside);
         public DMouseOver MouseOver = new DMouseOver((o, x) => { });
-        public delegate void DMouseDown(ClickableArea o);
-        public DMouseDown MouseDown = new DMouseDown((o) => { });
-        public delegate void DMouseUp(ClickableArea o);
-        public DMouseUp MouseUp = new DMouseUp((o) => { });
+        public delegate void DMouseDown(ClickableArea o, bool right);
+        public DMouseDown MouseDown = new DMouseDown((o, x) => { });
+        public delegate void DMouseUp(ClickableArea o, bool right);
+        public DMouseUp MouseUp = new DMouseUp((o, x) => { });
         public delegate void DMouseWheel(ClickableArea o, bool incr);
         public DMouseWheel MouseWheel = new DMouseWheel((o, x) => { });
         public bool pressed = false;
@@ -37,11 +39,17 @@ namespace MarvisConsole {
                 hover = true;
                 MouseOver(this,true);
                 switch (act) {
-                    case MouseAction.Down:
-                        MouseDown(this);
+                    case MouseAction.LeftDown:
+                        MouseDown(this, false);
                         break;
-                    case MouseAction.Up:
-                        MouseUp(this);
+                    case MouseAction.LeftUp:
+                        MouseUp(this, false);
+                        break;
+                    case MouseAction.RightDown:
+                        MouseDown(this, true);
+                        break;
+                    case MouseAction.RightUp:
+                        MouseUp(this, true);
                         break;
                     case MouseAction.WheelDown:
                         MouseWheel(this,false);

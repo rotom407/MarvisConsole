@@ -25,12 +25,15 @@ namespace MarvisConsole {
                     Thread.Sleep(50);
                 } else {
                     if (Serial1.IsOpen) {
-                        byte tx=(byte)'s';
+                        byte[] bytesnd = new byte[2] { (byte)'s', 0x00 };
+                        byte bytecount = 1;
                         lock (Globals.serialcommand) {
-                            if (Globals.serialcommand.Count > 0)
-                                tx = Globals.serialcommand.Dequeue();
+                            if (Globals.serialcommand.Count >= 2) {
+                                bytesnd[0] = Globals.serialcommand.Dequeue();
+                                bytesnd[1] = Globals.serialcommand.Dequeue();
+                                bytecount = 2;
+                            }
                         }
-                        byte[] bytesnd = new byte[1] { tx };
                         byte[] msglenrecv = new byte[10];
                         byte[] byterecv = new byte[100];
                         byte[] datrecv = new byte[100];
@@ -38,7 +41,7 @@ namespace MarvisConsole {
                         bool failed = false;
                         int readnum = 0, offset = 0;
                         Serial1.DiscardInBuffer();
-                        Serial1.Write(bytesnd, 0, 1);
+                        Serial1.Write(bytesnd, 0, bytecount);
                         try {
                             Serial1.Read(msglenrecv, 0, 1);
                         } catch (TimeoutException) {

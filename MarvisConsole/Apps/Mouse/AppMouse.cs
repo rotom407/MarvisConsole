@@ -79,7 +79,7 @@ namespace MarvisConsole {
             mouse_event(action, X, Y, 0, 0);
         }
 
-        void applymotion(ClickableArea o) {
+        void applymotion(ClickableArea o,bool right) {
             enablemotion = !enablemotion;
         }
         

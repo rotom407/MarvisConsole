@@ -68,6 +68,8 @@
     <Compile Include="Apps\Example\AppExample.cs" />
     <Compile Include="Apps\Example\PanelExample.cs" />
     <Compile Include="Apps\InteropTest\AppInteropTest.cs" />
+    <Compile Include="Apps\Minecraft\AppMinecraft.cs" />
+    <Compile Include="Apps\Minecraft\PanelMinecraft.cs" />
     <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />
     <Compile Include="Apps\Mouse\PanelMouseLocation.cs" />
@@ -107,5 +109,6 @@
   <ItemGroup>
     <Content Include="Assets\marvisconsole.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

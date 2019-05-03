@@ -13,14 +13,14 @@ namespace MarvisConsole {
             Console.WriteLine("Pressed");
         }
 
-        void SerialConnect(ClickableArea o) {
+        void SerialConnect(ClickableArea o,bool right) {
             if(Globals.demomode)
                 Globals.sworker.usefakedata = true;
             else
                 Globals.sworker.SetPortOpened(true, Globals.serialport);
         }
 
-        void AppStart(ClickableArea o) {
+        void AppStart(ClickableArea o, bool right) {
             Globals.panelanimated = !Globals.panelanimated;
             if (Globals.panelanimated) {
                 Globals.appreg.applist.Add(Globals.GetApp(Globals.appselected));
@@ -29,20 +29,65 @@ namespace MarvisConsole {
             }
         }
 
-        void SendCommands(ClickableArea o) {
-            lock (Globals.serialcommand) {
-                Globals.serialcommand.Enqueue((byte)'R');
-                Globals.serialcommand.Enqueue(Globals.GetRawChannelCommand(Globals.rawchselected));
+        void SendCommands(ClickableArea o,bool right) {
+            if (!right) {
+                switch (o.ival) {
+                    case 0://change
+                        lock (Globals.serialcommand) {
+                            Globals.serialcommand.Enqueue((byte)'r');
+                            Globals.serialcommand.Enqueue(Globals.GetRawChannelCommand(Globals.rawchselected));
+                        }
+                        break;
+                    case 1://disable
+                        lock (Globals.serialcommand) {
+                            Globals.serialcommand.Enqueue((byte)'d');
+                            Globals.serialcommand.Enqueue(Globals.GetRawChannelCommand(Globals.rawchselected));
+                        }
+                        break;
+                    case 2://enable
+                        lock (Globals.serialcommand) {
+                            Globals.serialcommand.Enqueue((byte)'e');
+                            Globals.serialcommand.Enqueue(Globals.GetRawChannelCommand(Globals.rawchselected));
+                        }
+                        break;
+                }
+            } else {
+                ChangeCommands(o, true);
             }
         }
 
-        void SwitchRawChannel(ClickableArea o) {
-            o.ival = (o.ival + 1) % Globals.rawchcmdnum;
+        void ChangeCommands(ClickableArea o, bool wheelup) {
+            if (wheelup) {
+                o.ival++; if (o.ival > 2) o.ival = 0;
+            } else {
+                o.ival--; if (o.ival < 0) o.ival = 2;
+            }
+            switch (o.ival) {
+                case 0:
+                    o.caption = "Change";
+                    break;
+                case 1:
+                    o.caption = "Disable";
+                    break;
+                case 2:
+                    o.caption = "Enable";
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+
+        void SwitchRawChannel(ClickableArea o,bool wheelup) {
+            if (wheelup) {
+                o.ival++; if (o.ival >= Globals.rawchcmdnum) o.ival = 0;
+            } else {
+                o.ival--; if (o.ival < 0) o.ival = Globals.rawchcmdnum - 1;
+            }
             Globals.rawchselected = o.ival;
             o.caption = "Raw Channel: EMGCH" + (o.ival + 1).ToString();
         }
 
-        void SwitchApp(ClickableArea o) {
+        void SwitchApp(ClickableArea o, bool right) {
             o.ival = (o.ival + 1) % Globals.appnum;
             Globals.appselected = o.ival;
             o.caption = "App: " + Globals.appnames[o.ival];
@@ -78,7 +123,8 @@ namespace MarvisConsole {
                 390,
                 420));
             btnrawselect.border = true;
-            btnrawselect.MouseDown = SwitchRawChannel;
+            btnrawselect.MouseDown = (o, x) => { SwitchRawChannel(o, !x); };
+            btnrawselect.MouseWheel = SwitchRawChannel;
             btnrawselect.caption = "Raw Channel: EMGCH1";
             clickables.Add(btnrawselect);
 
@@ -89,6 +135,7 @@ namespace MarvisConsole {
                 420));
             btnrawapply.caption = "Change";
             btnrawapply.MouseDown = SendCommands;
+            btnrawapply.MouseWheel = ChangeCommands;
             clickables.Add(btnrawapply);
 
             ClickableButton btnconnect = new ClickableButton(new RectangleBox(

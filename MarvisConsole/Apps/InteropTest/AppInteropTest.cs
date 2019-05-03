@@ -22,7 +22,7 @@ namespace MarvisConsole {
         IPEndPoint ep = new IPEndPoint(IPAddress.Parse(svrip), udpportsvr);
 
         public bool enablemotion;
-        void applymotion(ClickableArea o) {
+        void applymotion(ClickableArea o,bool right) {
             enablemotion = !enablemotion;
         }
 
@@ -45,7 +45,7 @@ namespace MarvisConsole {
         }
 
         public bool connected=false;
-        void ConnectToServer(ClickableArea o) {
+        void ConnectToServer(ClickableArea o,bool right) {
             connected = !connected;
             if (connected) {
                 o.caption = "Disconnect";
@@ -66,7 +66,7 @@ namespace MarvisConsole {
             }
         }
 
-        void EnableDataTransfer(ClickableArea o) {
+        void EnableDataTransfer(ClickableArea o,bool right) {
             enabledatatransfer = !enabledatatransfer;
             if (enabledatatransfer) {
                 o.caption = "Disable";

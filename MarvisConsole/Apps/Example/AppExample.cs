@@ -13,7 +13,7 @@ namespace MarvisConsole {
         const int appuid = 0x05;
 
         public bool enablemotion;
-        void applymotion(ClickableArea o) {
+        void applymotion(ClickableArea o,bool right) {
             enablemotion = !enablemotion;
         }
 
