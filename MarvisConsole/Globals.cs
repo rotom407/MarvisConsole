@@ -38,6 +38,7 @@ namespace MarvisConsole {
             "Interop Test",
             "Minecraft"
         };
+
         public static AppBase GetApp(int appid) {
             switch (appid) {
                 case 0:
@@ -63,7 +64,7 @@ namespace MarvisConsole {
 
         public static string serialport = /*"COM17"*/"COM20";
         public const bool enableeffects = true;
-        public const bool demomode = true;
+        public const bool demomode = false;
 
         public static RGBAColor[] emgchannelcols = {
             /*

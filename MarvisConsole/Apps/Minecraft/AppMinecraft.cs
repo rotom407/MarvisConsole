@@ -11,9 +11,9 @@ using WindowsInput;
 namespace MarvisConsole {
     public class AppMinecraft : AppBase {
 
-        [DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern int GetWindowText(IntPtr hwnd, string lpString, int cch);
-        [DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
         public static extern IntPtr GetForegroundWindow();
         [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
         public static extern void mouse_event(uint dwFlags, int dx, int dy, uint cButtons, uint dwExtraInfo);
@@ -38,7 +38,7 @@ namespace MarvisConsole {
         public override List<PanelGroupApp> Panels { get => panels; set => throw new NotImplementedException(); }
         public override List<ClickableArea> Clickables { get => clickables; set => throw new NotImplementedException(); }
         const int appuid = 0x09;
-        const string mctitle = "Minecraft 1.7.10";
+        const string mctitle = "Minecraft";
 
         public bool enablemotion;
         public bool onwindow;
@@ -49,6 +49,7 @@ namespace MarvisConsole {
 
         public AppMinecraft() {
             panels.Add(new PanelMinecraftView());
+            panels.Add(new PanelMinecraftAction());
 
             ClickableButton btnapply = new ClickableButton(new RectangleBox(
                 (Globals.defaultwindowwidth - Globals.panelspacingbetween) * Globals.panelanimationratio * 1.1,
@@ -83,75 +84,190 @@ namespace MarvisConsole {
         public double mousexremain = 0, mouseyremain = 0;
         public double movexspd = 0.0, moveyspd = 0.0;
         public int movexstate = 0, moveystate = 0;
-        public const double mousexspfactor = -1.0, mouseyspfactor = 0.0;
+        public const double mousexspfactor = 1.0, mouseyspfactor = 0.0;
         public const double mousedeadzone = 30, mousedeadzonefactor = 3.0;
-        public const double moveyspthresh = 5, movexspthresh = 12;
+        public const double moveyspthresh = 6, movexspthresh = 8;
+        public double moveyspoffset = 0, movexspoffset = 0;
+        public const double moveoffsetadjspd = 0.01;
         public int moveforwardcd = 0;
+
+        public int actionstate = 0;//0 idle 1 L 2 R 3 A 4 D
+        public int actioncooldown = 0, actioncooldownmax = 10;
+        public int Dchcount = 0;
 
         public override void Run(DataRecord rec) {
             if (rec != null) {  //valid data
                 DataRecordRaw drr = new DataRecordRaw(rec); //translation
 
                 //calculate motions
-                mousexsp = (double)drr.gyro[0, 0] / 16384 * 8000 * mousexspfactor;
-                mouseysp = (double)drr.gyro[0, 2] / 16384 * 8000 * mouseyspfactor;
+                mousexsp = 0.5 * mousexsp + 0.5 * (double)drr.gyro[0, 0] / 16384 * 10000 * mousexspfactor;
+                mouseysp = 0.5 * mouseysp + 0.5 * (double)drr.gyro[0, 2] / 16384 * 10000 * mouseyspfactor;
 
                 moveyspd = -(double)drr.accelmeter[0, 2] / 16384 * 4000;
-                movexspd = (double)drr.accelmeter[0, 1] / 16384 * 4000;
+                movexspd = -(double)drr.accelmeter[0, 1] / 16384 * 4000;
 
-                if (moveyspd > moveyspthresh && moveystate <= 0) {
+                if (movexstate == 0) {
+                    movexspoffset = (1 - moveoffsetadjspd) * movexspoffset + moveoffsetadjspd * movexspd;
+                }
+                if (moveystate == 0) {
+                    moveyspoffset = (1 - moveoffsetadjspd) * moveyspoffset + moveoffsetadjspd * moveyspd;
+                }
+
+                if ((moveyspd - moveyspoffset) > moveyspthresh && moveystate <= 0) {
                     moveystate = 1;
                     moveforwardcd = 7;
-                    isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_W);
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_S);
+                    if (enablemotion && onwindow) {
+                        isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_W);
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_S);
+                    }
                 }
                 if (moveforwardcd > 0) {
                     moveforwardcd--;
                 }
 
-                if ((moveyspd < 0.9 * moveyspthresh && moveystate == 1 && moveforwardcd==0) || (moveyspd > -0.9 * moveyspthresh && moveystate == -1)) {
+                if (((moveyspd - moveyspoffset) < 0.9 * moveyspthresh && moveystate == 1 && moveforwardcd==0) || ((moveyspd - moveyspoffset) > -0.9 * moveyspthresh && moveystate == -1)) {
                     moveystate = 0;
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_W);
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_S);
+                    if (enablemotion && onwindow) {
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_W);
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_S);
+                    }
                 }
 
-                if (moveyspd < -moveyspthresh && moveystate >= 0) {
+                if ((moveyspd - moveyspoffset) < -moveyspthresh && moveystate >= 0) {
                     moveystate = -1;
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_W);
-                    isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_S);
+                    if (enablemotion && onwindow) {
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_W);
+                        isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_S);
+                    }
                 }
 
-                if (movexspd > movexspthresh && movexstate <= 0) {
+                if ((movexspd - movexspoffset) > movexspthresh && movexstate <= 0) {
                     movexstate = 1;
-                    isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_A);
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_D);
+                    if (enablemotion && onwindow) {
+                        isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_A);
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_D);
+                    }
                 }
 
-                if ((movexspd < 0.9 * movexspthresh && movexstate == 1 && moveforwardcd == 0) || (movexspd > -0.9 * movexspthresh && movexstate == -1)) {
+                if (((movexspd - movexspoffset) < 0.9 * movexspthresh && movexstate == 1 && moveforwardcd == 0) || ((movexspd - movexspoffset) > -0.9 * movexspthresh && movexstate == -1)) {
                     movexstate = 0;
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_A);
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_D);
+                    if (enablemotion && onwindow) {
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_A);
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_D);
+                    }
                 }
 
-                if (movexspd < -movexspthresh && movexstate >= 0) {
+                if ((movexspd - movexspoffset) < -movexspthresh && movexstate >= 0) {
                     movexstate = -1;
-                    isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_A);
-                    isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_D);
+                    if (enablemotion && onwindow) {
+                        isim.Keyboard.KeyUp(WindowsInput.Native.VirtualKeyCode.VK_A);
+                        isim.Keyboard.KeyDown(WindowsInput.Native.VirtualKeyCode.VK_D);
+                    }
                 }
 
                 if (Math.Abs(mousexsp) < mousedeadzone) {
                     bool neg = mousexsp < 0;
+                    if (actionstate != 0) mousexsp /= 4;
                     mousexsp = Math.Pow(Math.Abs(mousexsp) / mousedeadzone, mousedeadzonefactor) * mousedeadzone;
                     if (neg) mousexsp = -mousexsp;
                 }
 
-                //send to panels
-                List<byte> txbytes = new List<byte> { appuid };
-                txbytes.Add(mouseenable ? (byte)0x01 : (byte)0x00);
-                txbytes.Add(AppUtils.ValueMapToByte(mousexsp, -30, 30));  //exampledata
-                txbytes.Add(AppUtils.ValueMapToByte(mouseysp, -30, 30));
-                DataRecord txdr = new DataRecord(0x00, txbytes);
-                Globals.appdatbuf.Push(txdr);
+                //actions
+                const int Lch = 0, Rch = 1, Ach = 2, Dch = 3, ECGRch = 4;
+                switch (actionstate) {
+                    case 0:
+                        if (actioncooldown == 0) {
+                            if (drr.emgamplitude[Ach] > 0) {
+                                actioncooldown = actioncooldownmax = 10;
+                                actionstate = 3;
+                                AppUtils.AddLabelToEMGPanel(new PanelLabel("A", Globals.emgchannelcols[8], 0));
+                                if (enablemotion && onwindow) {
+                                    isim.Mouse.LeftButtonDown();
+                                }
+                            }else if (drr.emgamplitude[Lch] > 10) {
+                                actioncooldown = actioncooldownmax = 40;
+                                actionstate = 1;
+                                AppUtils.AddLabelToEMGPanel(new PanelLabel("L", Globals.emgchannelcols[8], 0));
+                                if (enablemotion && onwindow) {
+                                    isim.Mouse.VerticalScroll(1);
+                                }
+                            } else if (drr.emgamplitude[Rch] > 10) {
+                                actioncooldown = actioncooldownmax = 40;
+                                actionstate = 2;
+                                AppUtils.AddLabelToEMGPanel(new PanelLabel("R", Globals.emgchannelcols[8], 0));
+                                if (enablemotion && onwindow) {
+                                    isim.Mouse.VerticalScroll(-1);
+                                }
+                            }
+                            if ((drr.emgamplitude[Dch]) > 25) {
+                                Dchcount++;
+                                if (Dchcount > 5) {
+                                    Dchcount = 0;
+                                    actioncooldown = actioncooldownmax = 10;
+                                    actionstate = 4;
+                                    AppUtils.AddLabelToEMGPanel(new PanelLabel("D", Globals.emgchannelcols[8], 0));
+                                    if (enablemotion && onwindow) {
+                                        isim.Mouse.RightButtonDown();
+                                    }
+                                }
+                            } else {
+                                Dchcount=0;
+                            }
+                        }
+                        break;
+                    case 1:
+                    case 2:
+                        if (actioncooldown == 0) {
+                            actioncooldown = actioncooldownmax = 10;
+                            actionstate = 0;
+                        }
+                        break;
+                    case 3:
+                        if (drr.emgamplitude[Ach] > 0) {
+                            actioncooldown = actioncooldownmax = 10;
+                            actionstate = 3;
+                        } else if (actioncooldown == 0) {
+                            actioncooldown = actioncooldownmax = 10;
+                            actionstate = 0;
+                            if (enablemotion && onwindow) {
+                                isim.Mouse.LeftButtonUp();
+                            }
+                        }
+                        break;
+                    case 4:
+                        if ((drr.emgamplitude[Dch]) > 25) {
+                            actioncooldown = actioncooldownmax = 10;
+                            actionstate = 4;
+                        } else if (actioncooldown == 0) {
+                            actioncooldown = actioncooldownmax = 10;
+                            actionstate = 0;
+                            if (enablemotion && onwindow) {
+                                isim.Mouse.RightButtonUp();
+                            }
+                        }
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+
+            //send to panels
+            List<byte> txbytes = new List<byte> { appuid };
+            txbytes.Add(mouseenable ? (byte)0x01 : (byte)0x00);
+            txbytes.Add(AppUtils.ValueMapToByte(mousexsp, -50, 50));
+            txbytes.Add(AppUtils.ValueMapToByte(mouseysp, -50, 50));
+            txbytes.Add(AppUtils.ValueMapToByte(movexspd, -20, 20));
+            txbytes.Add(AppUtils.ValueMapToByte(moveyspd, -20, 20));
+            txbytes.Add(AppUtils.ValueMapToByte(movexspoffset, -20, 20));
+            txbytes.Add(AppUtils.ValueMapToByte(moveyspoffset, -20, 20));
+            txbytes.Add((byte)actionstate);
+            txbytes.Add(AppUtils.ValueMapToByte((double)actioncooldown / actioncooldownmax, 0, 1));
+            DataRecord txdr = new DataRecord(0x00, txbytes);
+            Globals.appdatbuf.Push(txdr);
+
+
+            if (actioncooldown > 0) {
+                actioncooldown--;
             }
 
             //check on window
@@ -160,7 +276,8 @@ namespace MarvisConsole {
                 onwindowchecknum = 0;
                 string title = ActiveApplTitle();
                 //Console.WriteLine(title);
-                onwindow = string.Compare(title, mctitle) == 0;
+                //Console.WriteLine(string.Compare(title, mctitle));
+                onwindow = string.Compare(title, mctitle) > 0;
             }
 
             //apply motions

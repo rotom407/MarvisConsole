@@ -8,7 +8,7 @@ namespace MarvisConsole {
     public class PanelRaw : PanelGroupRaw {
         RGBAColor baselinecol = new RGBAColor(1.0, 1.0, 1.0, 0.2);
         CyclicBuffer<sbyte> dispbuf = new CyclicBuffer<sbyte>(800);
-        double offsetsamps, samplelen, interpolaterate = 4.0;
+        double offsetsamps, samplelen, interpolaterate = 0;
         public PanelRaw() {
             caption = "Raw EMG - CH1   ";
             boundingbox = new RectangleBox(Globals.panelspacingtoleft,

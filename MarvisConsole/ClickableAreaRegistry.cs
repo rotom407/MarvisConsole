@@ -14,7 +14,11 @@ namespace MarvisConsole {
         }
 
         void SerialConnect(ClickableArea o,bool right) {
-            if(Globals.demomode)
+            //Console.WriteLine("Input Port:");
+            //Globals.serialport = Console.ReadLine();
+            //Console.WriteLine("OK");
+            //needs terminal, read config instead
+            if (Globals.demomode)
                 Globals.sworker.usefakedata = true;
             else
                 Globals.sworker.SetPortOpened(true, Globals.serialport);
@@ -165,7 +169,7 @@ namespace MarvisConsole {
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
                 480,
-                480 + 64), "../../Assets/marvisconsole.png");
+                480 + 64), "./Assets/marvisconsole.png");
             logo.alpha = 1;
             clickables.Add(logo);
 
@@ -173,7 +177,7 @@ namespace MarvisConsole {
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
                 480,
-                480 + 64), "../../Assets/marvisconsoledemo.png");
+                480 + 64), "./Assets/marvisconsoledemo.png");
             demologo.alpha = 0;
             clickables.Add(demologo);
         }

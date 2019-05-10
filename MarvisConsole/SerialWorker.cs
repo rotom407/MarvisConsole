@@ -69,7 +69,6 @@ namespace MarvisConsole {
                     }
                     Thread.Sleep(50);
                 }
-                
             }
         }
         public void SetPortOpened(bool opened, string name) {

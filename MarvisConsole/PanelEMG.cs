@@ -64,7 +64,7 @@ namespace MarvisConsole {
                     if (0.2 * dispbuf[dispbuf.maxlen - 1].amp[i - 1] / 255.0 > effectstrengthfast[i - 1])
                         effectstrengthfast[i - 1] = 0.5 * effectstrengthfast[i - 1] + 0.5 * 0.3 * dispbuf[dispbuf.maxlen - 1].amp[i - 1] / 255.0;
                 } else {
-                    effectstrengthslow[i - 1] = 0.99 * effectstrengthslow[i - 1];
+                    effectstrengthslow[i - 1] = 0.95 * effectstrengthslow[i - 1];
                 }
                 effectstrengthfast[i - 1] = 0.9 * effectstrengthfast[i - 1];
                 RendererWrapper.DrawEffectExcitation(

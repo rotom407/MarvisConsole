@@ -13,11 +13,11 @@ namespace MarvisConsole {
         public override List<PanelGroupApp> Panels { get => panels; set => throw new NotImplementedException(); }
         public override List<ClickableArea> Clickables { get => clickables; set => throw new NotImplementedException(); }
         const int appuid = 0x03;
-        const int udpportsvr = 7920;
-        const int udpportcli = 7920;
+        const int udpportsvr = 1121;
+        const int udpportcli = 1121;
         public byte udptimestamp = 0;
         public bool enabledatatransfer = false;
-        const string svrip = "47.93.244.190";
+        const string svrip = "127.0.0.1";
         UdpClient client;
         IPEndPoint ep = new IPEndPoint(IPAddress.Parse(svrip), udpportsvr);
 

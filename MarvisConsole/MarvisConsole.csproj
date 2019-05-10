@@ -33,9 +33,6 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Magick.NET-Q16-AnyCPU, Version=7.11.1.0, Culture=neutral, PublicKeyToken=2004825badfa91ec, processorArchitecture=MSIL">
-      <HintPath>..\packages\Magick.NET-Q16-AnyCPU.7.11.1\lib\net40\Magick.NET-Q16-AnyCPU.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -72,6 +69,7 @@
     <Compile Include="Apps\Example\PanelExample.cs" />
     <Compile Include="Apps\InteropTest\AppInteropTest.cs" />
     <Compile Include="Apps\Minecraft\AppMinecraft.cs" />
+    <Compile Include="Apps\Minecraft\PanelMinecraftAction.cs" />
     <Compile Include="Apps\Minecraft\PanelMinecraftView.cs" />
     <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />

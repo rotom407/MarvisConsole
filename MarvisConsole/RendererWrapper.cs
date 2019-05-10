@@ -452,14 +452,14 @@ namespace MarvisConsole {
 
             switch (style) {
                 case 0://pts
-                    Gl.glBegin(Gl.GL_TRIANGLE_FAN);
                     foreach(var pt in pts) {
+                        Gl.glBegin(Gl.GL_TRIANGLE_FAN);
                         Gl.glVertex2d(pt.x - size / 2, pt.y);
                         Gl.glVertex2d(pt.x, pt.y + size / 2);
                         Gl.glVertex2d(pt.x + size / 2, pt.y);
                         Gl.glVertex2d(pt.x, pt.y - size / 2);
+                        Gl.glEnd();
                     }
-                    Gl.glEnd();
                     break;
                 case 1://cross
                     Gl.glBegin(Gl.GL_LINES);
@@ -546,7 +546,7 @@ namespace MarvisConsole {
                 foreach(var p in particles) {
                     p.Simulate();
                 }
-                particles.RemoveAll(x => x.dead == true);
+                particles.RemoveAll(x => x.dead);
             }
             UpdateDepth(depth);
             Gl.glPushMatrix();
@@ -576,6 +576,33 @@ namespace MarvisConsole {
             }
             SetBlendMode(BlendModes.Normal);
             Gl.glEnd();
+            Gl.glPopMatrix();
+        }
+
+        public static void DrawPieMark(RectangleBox rect,double xpos,double ypos,double size,double percent,RGBAColor col,string text,double depth = -1.0,bool bold=false) {
+            UpdateDepth(depth);
+            Gl.glPushMatrix();
+            Gl.glTranslated(rect.left, rect.bottom, currentdepth);
+            Gl.glPushMatrix();
+            Gl.glTranslated(xpos, ypos, 0);
+            glColor4d(col);
+            if (bold)
+                Gl.glLineWidth(2);
+            Gl.glBegin(Gl.GL_LINE_STRIP);
+            for(int i = 0; i <= 32; i++) {
+                Gl.glVertex2d(-size * Math.Sin((double)i / 32 * 2 * Math.PI), size * Math.Cos((double)i / 32 * 2 * Math.PI));
+            }
+            Gl.glEnd();
+            Gl.glLineWidth(1);
+            glColor4d(col.Fade(0.5));
+            Gl.glBegin(Gl.GL_TRIANGLE_FAN);
+            Gl.glVertex2d(0, 0);
+            for (int i = 0; i <= 32 * percent; i++) {
+                Gl.glVertex2d(-0.8 * size * Math.Sin((double)i / 32 * 2 * Math.PI), 0.8 * size * Math.Cos((double)i / 32 * 2 * Math.PI));
+            }
+            Gl.glEnd();
+            Gl.glPopMatrix();
+            DrawString(xpos-5, ypos-5, text, new RGBAColor(1, 1, 1, 1));
             Gl.glPopMatrix();
         }
     }
