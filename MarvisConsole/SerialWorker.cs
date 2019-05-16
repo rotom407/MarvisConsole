@@ -16,7 +16,8 @@ namespace MarvisConsole {
             Serial1 = new SerialPort(/*"COM13"*/"COM20", 115200, Parity.None, 8, StopBits.One) {
                 DtrEnable = false,
                 RtsEnable = false,
-                ReadTimeout = 500
+                ReadTimeout = 500,
+                WriteTimeout = 500
             };
             while (running) {
                 if (usefakedata) {
@@ -41,10 +42,21 @@ namespace MarvisConsole {
                         bool failed = false;
                         int readnum = 0, offset = 0;
                         Serial1.DiscardInBuffer();
-                        Serial1.Write(bytesnd, 0, bytecount);
+                        try {
+                            Serial1.Write(bytesnd, 0, bytecount);
+                        } catch (TimeoutException ex) {
+                            failed = true;
+                        } catch (System.IO.IOException ex) {
+                            Console.WriteLine("IO Fail");
+                            failed = true;
+                        }
+
                         try {
                             Serial1.Read(msglenrecv, 0, 1);
-                        } catch (TimeoutException) {
+                        } catch (TimeoutException ex) {
+                            failed = true;
+                        } catch (System.IO.IOException ex) {
+                            Console.WriteLine("IO Fail");
                             failed = true;
                         }
                         msglen = msglenrecv[0] - 1;
@@ -56,8 +68,11 @@ namespace MarvisConsole {
                                 try {
                                     readnum = Serial1.Read(byterecv, offset, msglen - offset);
                                     offset += readnum;
-                                } catch (TimeoutException) {
-                                    failed = true;  //when serial read timed out
+                                } catch (TimeoutException ex) {
+                                    failed = true;
+                                } catch (System.IO.IOException ex) {
+                                    Console.WriteLine("IO Fail");
+                                    failed = true;
                                 }
                             } while (offset < msglen && failed == false);
                             if (!failed) {
@@ -76,6 +91,14 @@ namespace MarvisConsole {
                 if (!Serial1.IsOpen) {
                     Serial1.PortName = name;
                     Serial1.Open();
+                } else {
+                    Serial1.ReadTimeout = 50;
+                    Serial1.WriteTimeout = 50;
+                    Serial1.Close();
+                    Serial1.PortName = name;
+                    Serial1.Open();
+                    Serial1.ReadTimeout = 500;
+                    Serial1.WriteTimeout = 500;
                 }
             } else {
                 if (Serial1.IsOpen) {

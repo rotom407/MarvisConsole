@@ -169,7 +169,7 @@ namespace MarvisConsole {
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
                 480,
-                480 + 64), "./Assets/marvisconsole.png");
+                480 + 64), "../../Assets/marvisconsole.png");
             logo.alpha = 1;
             clickables.Add(logo);
 
@@ -177,7 +177,7 @@ namespace MarvisConsole {
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2,
                 Globals.defaultwindowwidth * 0.61 + Globals.panelspacingbetween / 2 + 344,
                 480,
-                480 + 64), "./Assets/marvisconsoledemo.png");
+                480 + 64), "../../Assets/marvisconsoledemo.png");
             demologo.alpha = 0;
             clickables.Add(demologo);
         }
