@@ -34,27 +34,18 @@ namespace MarvisConsole {
         public const bool enableeffects = false;
 
         public static string[] appnames = {
-            "Mouse Control",
-            "Presentation",
-            "Interop Test",
             "Minecraft"
         };
 
         public static AppBase GetApp(int appid) {
             switch (appid) {
                 case 0:
-                    return new AppMouse();
-                case 1:
-                    return new AppPresentation();
-                case 2:
-                    return new AppInteropTest();
-                case 3:
                     return new AppMinecraft();
                 default:
                     throw new NotImplementedException();
             }
         }
-        public const int appnum = 4;
+        public const int appnum = 1;
         public static int appselected = 0;
 
         public static byte GetRawChannelCommand(int cmdid) {

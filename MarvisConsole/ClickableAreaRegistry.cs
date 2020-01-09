@@ -110,7 +110,7 @@ namespace MarvisConsole {
             //btnappselect.MouseDown = msd;
             btnappselect.border = true;
             btnappselect.col = new RGBAColor(200.0 / 255.0, 80.0 / 255.0, 0.0 / 255.0, 1.0);
-            btnappselect.caption = "App: Mouse Control";
+            btnappselect.caption = "App: Minecraft";
             btnappselect.MouseDown = (o,x)=> { SwitchApp(o, !x); } ;
             btnappselect.MouseWheel = SwitchApp;
             clickables.Add(btnappselect);

@@ -67,15 +67,10 @@
     <Compile Include="Apps\ExampleBlank\PanelExampleBlank.cs" />
     <Compile Include="Apps\Example\AppExample.cs" />
     <Compile Include="Apps\Example\PanelExample.cs" />
-    <Compile Include="Apps\InteropTest\AppInteropTest.cs" />
     <Compile Include="Apps\Minecraft\AppMinecraft.cs" />
     <Compile Include="Apps\Minecraft\PanelMinecraftAction.cs" />
     <Compile Include="Apps\Minecraft\PanelMinecraftView.cs" />
-    <Compile Include="Apps\Mouse\AppMouse.cs" />
     <Compile Include="AppRegistry.cs" />
-    <Compile Include="Apps\Mouse\PanelMouseLocation.cs" />
-    <Compile Include="Apps\Mouse\PanelMouseSpeed.cs" />
-    <Compile Include="Apps\Presentation\AppPresentation.cs" />
     <Compile Include="AppWorker.cs" />
     <Compile Include="ClickableArea.cs" />
     <Compile Include="ClickableAreaRegistry.cs" />
