@@ -514,31 +514,7 @@ namespace MarvisConsole {
         }
 
         public static void DrawEffectExcitation(RectangleBox rect, RGBAColor col, double intensity, double depth = -1.0) {
-            if (Globals.enableeffects) {
-                UpdateDepth(depth);
-                SetBlendMode(BlendModes.Add);
-                Gl.glPushMatrix();
-                Gl.glTranslated(rect.left, rect.bottom, currentdepth);
-                double left = rect.Width * (1.0 - intensity);
-                Gl.glBegin(Gl.GL_TRIANGLE_FAN);
-                glColor4d(col.Fade(0));
-                Gl.glVertex2d(left, 0);
-                Gl.glVertex2d(left, rect.Height);
-                glColor4d(col.Fade(0.5));
-                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, rect.Height);
-                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, 0);
-                Gl.glEnd();
-                Gl.glBegin(Gl.GL_TRIANGLE_FAN);
-                glColor4d(col.Fade(0.5));
-                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, 0);
-                Gl.glVertex2d(0.2 * left + 0.8 * rect.Width, rect.Height);
-                glColor4d(col);
-                Gl.glVertex2d(rect.Width, rect.Height);
-                Gl.glVertex2d(rect.Width, 0);
-                Gl.glEnd();
-                Gl.glPopMatrix();
-                SetBlendMode(BlendModes.Normal);
-            }
+            //no effects for you
         }
 
         public static void DrawParticles(RectangleBox rect, List<Particle> particles, double depth = -1.0,bool simulate=true) {

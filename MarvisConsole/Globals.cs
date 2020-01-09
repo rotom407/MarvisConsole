@@ -31,6 +31,7 @@ namespace MarvisConsole {
         public static bool panelanimated = false;
         public const double panelanimationratio = 0.8;
         public const bool appcontrolenable = false;
+        public const bool enableeffects = false;
 
         public static string[] appnames = {
             "Mouse Control",
@@ -62,9 +63,8 @@ namespace MarvisConsole {
         public const int rawchcmdnum = 8;
         public static int rawchselected = 0;
 
-        public static string serialport = /*"COM17"*/"COM20";
-        public const bool enableeffects = true;
-        public const bool demomode = false;
+        public static string serialport = "COM20";
+        public const bool demomode = true;
 
         public static RGBAColor[] emgchannelcols = {
             /*
